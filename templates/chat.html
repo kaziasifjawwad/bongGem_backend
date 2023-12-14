@@ -1,0 +1,161 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Chat with GPT-3.5</title>#}
+{#    <link rel="stylesheet" type="text/css" href="styles.css">#}
+{#</head>#}
+{#<body>#}
+{#    <div class="chat-container" id="chat-container">#}
+{#        <div class="chat-box" id="chat-box"></div>#}
+{#        <input type="text" id="user-input" placeholder="Type a message...">#}
+{#        <button onclick="sendMessage()">Send</button>#}
+{#    </div>#}
+{##}
+{#    <script>#}
+{#        function sendMessage() {#}
+{#            var userInput = document.getElementById('user-input').value;#}
+{#            var chatBox = document.getElementById('chat-box');#}
+{##}
+{#            // Append user message to chat box#}
+{#            chatBox.innerHTML += '<div class="user-message">' + userInput + '</div>';#}
+{##}
+{#            // Clear user input field#}
+{#            document.getElementById('user-input').value = '';#}
+{##}
+{#            // Send user message to Flask server#}
+{#            fetch('/get_response', {#}
+{#                method: 'POST',#}
+{#                headers: {#}
+{#                    'Content-Type': 'application/json'#}
+{#                },#}
+{#                body: JSON.stringify({ message: userInput })#}
+{#            })#}
+{#            .then(response => response.json())#}
+{#            .then(data => {#}
+{#                // Append bot response to chat box#}
+{#                chatBox.innerHTML += '<div class="bot-message">' + data.message + '</div>';#}
+{#            });#}
+{#        }#}
+{#    </script>#}
+{#</body>#}
+{#</html>#}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Home</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <!--
+      Need a visual blank slate?
+      Remove all code in `styles.css`!
+    -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+    <script type="module" src="../static/script.js"></script>
+</head>
+<body>
+<div class="chat-content">
+    <ul>
+    </ul>
+    <div class="chat-input">
+        <input type="text" id="user-input"/>
+        <button onclick="sendMessage()">Submit</button>
+    </div>
+</div>
+</body>
+
+<script>
+    let final_data = []
+
+    function sendMessage() {
+        var userInput = document.getElementById('user-input').value;
+        {#var chatBox = document.getElementById('chat-box');#}
+        {##}
+        {#// Append user message to chat box#}
+        {#chatBox.innerHTML += '<div class="user-message">' + userInput + '</div>';#}
+
+        // Clear user input field
+        document.getElementById('user-input').value = '';
+
+        // Send user message to Flask server
+        fetch('/get_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({message: userInput})
+        })
+            .then(response => response.json())
+            .then(data => {
+                let unit = {
+                    'user': userInput,
+                    'gpt': data.message
+                }
+                final_data.push(unit);
+                renderMessages();
+            });
+    }
+
+
+    function renderMessages() {
+        const chatContent = document.querySelector('.chat-content ul');
+
+        // Clear existing content
+        chatContent.innerHTML = '';
+
+        // Loop through data and create list items for each message
+        final_data.forEach(message => {
+            const gpt = document.createElement('li');
+
+            const image = document.createElement('img');
+            image.src = 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+            image.alt = 'avatar';
+
+            const gptMessage = document.createElement('div');
+            gptMessage.className = 'd';
+
+            const senderHeader = document.createElement('h6');
+            senderHeader.textContent = 'Gpt';
+
+            const contentParagraph = document.createElement('p');
+            contentParagraph.textContent = message.gpt;
+
+            gptMessage.appendChild(senderHeader);
+            gptMessage.appendChild(contentParagraph);
+
+            gpt.appendChild(image);
+            gpt.appendChild(gptMessage);
+
+
+            const user = document.createElement('li');
+
+            const userImage = document.createElement('img');
+            userImage.src = 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+            userImage.alt = 'avatar';
+
+            const userMessage = document.createElement('div');
+            userMessage.className = 'd';
+
+            const userHeader = document.createElement('h6');
+            userHeader.textContent = 'User';
+
+            const userParagraph = document.createElement('p');
+            userParagraph.textContent = message.user;
+
+            userMessage.appendChild(userHeader);
+            userMessage.appendChild(userParagraph);
+
+            user.appendChild(userImage);
+            user.appendChild(userMessage);
+
+            chatContent.appendChild(user);
+            chatContent.appendChild(gpt);
+
+        })
+    }
+</script>
+
+</html>
+
