@@ -12,7 +12,7 @@ def load_tokenizer(tokenizer_path):
 
 
 def generate_text(sequence):
-    model_path = "inference/trained_weight"
+    model_path = "inference/trained_weight/content/custom_q_and_a"
     max_length = 50
     model = load_model(model_path)
     tokenizer = load_tokenizer(model_path)
@@ -25,4 +25,4 @@ def generate_text(sequence):
         top_k=50,
         top_p=0.95,
     )
-    print(tokenizer.decode(final_outputs[0], skip_special_tokens=True))
+    return tokenizer.decode(final_outputs[0], skip_special_tokens=True)

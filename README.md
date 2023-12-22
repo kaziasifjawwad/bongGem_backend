@@ -44,3 +44,8 @@ After completing the above steps we are ready to use our system.
 To run the project, run the command below:
 
 `python3 app.py`
+
+>If you face 'config.json' not found error,
+just go to the textgenerator.py, and replace
+ model_path = "inference/trained_weight/content/custom_q_and_a"
+with the unzipped weight

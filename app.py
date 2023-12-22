@@ -13,8 +13,8 @@ def index():
 @app.route('/get_response', methods=['POST'])
 def get_response():
     user_message = request.json['message']
-    # response = generate_text(user_message)
-    return jsonify({'message': user_message})
+    response = generate_text(user_message)
+    return jsonify({'message': response})
 
 
 if __name__ == '__main__':
